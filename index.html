@@ -264,7 +264,7 @@ nav.scrolled .nav-links a:hover{color:var(--dark)}
 #hero{
   height:100svh;
   background:var(--dark);
-  display:flex;flex-direction:column;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;position:relative;overflow:visible;
 }
 /* Foto animada — capa propia en transform (compositor, no repinta en cada
    frame), para un zoom lento sin jank. */
@@ -433,9 +433,9 @@ nav.scrolled .nav-links a:hover{color:var(--dark)}
    los huecos de la onda — el listón mismo (su stroke) es la única forma
    visible, tal como en la referencia. */
 .belt-wrap{
-  position:relative;z-index:6;overflow:hidden;
-  height:clamp(56px,8vw,84px);
-  background:var(--dark);
+  position:absolute;left:0;right:0;bottom:0;z-index:8;
+  height:clamp(56px,8vw,84px);transform:translateY(50%);
+  background:transparent;overflow:visible;
 }
 .belt-svg{display:block;width:100%;height:100%}
 #hero .wave-divider{z-index:7}
@@ -1680,13 +1680,27 @@ footer{background:var(--dark);position:relative;overflow:hidden;padding:0 0 24px
    NO reintroducir este media query. */
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
 /* FIX FAQ centrado+derecha (override universal) */
-.faq-list{max-width:640px!important;margin:0 auto!important}
+
 .faq-chat-item{width:auto!important;max-width:100%!important;text-align:left!important}
 .faq-chat-item.open{align-self:stretch!important}
 .faq-chat-a-wrap{width:0!important;display:flex!important;justify-content:flex-end!important}
 .faq-chat-item.open .faq-chat-a-wrap{width:100%!important}
 .faq-chat-a-inner{display:flex!important;justify-content:flex-end!important;width:100%!important}
 .faq-chat-a{margin-left:0!important}
+
+/* Las tres ondas recortan el fondo real de la sección siguiente. */
+#nosotros,#testimonios,#contacto{
+  --wave-height:64px;
+  margin-top:calc(-1 * var(--wave-height));
+  padding-top:calc(clamp(80px,10vw,130px) + var(--wave-height));
+  z-index:2;
+  clip-path:polygon(0.0000% calc(var(--wave-height) * 0.40000),2.0833% calc(var(--wave-height) * 0.45540),4.1667% calc(var(--wave-height) * 0.49734),6.2500% calc(var(--wave-height) * 0.52695),8.3333% calc(var(--wave-height) * 0.54537),10.4167% calc(var(--wave-height) * 0.55372),12.5000% calc(var(--wave-height) * 0.55312),14.5833% calc(var(--wave-height) * 0.54472),16.6667% calc(var(--wave-height) * 0.52963),18.7500% calc(var(--wave-height) * 0.50898),20.8333% calc(var(--wave-height) * 0.48391),22.9167% calc(var(--wave-height) * 0.45554),25.0000% calc(var(--wave-height) * 0.42500),27.0833% calc(var(--wave-height) * 0.39342),29.1667% calc(var(--wave-height) * 0.36192),31.2500% calc(var(--wave-height) * 0.33164),33.3333% calc(var(--wave-height) * 0.30370),35.4167% calc(var(--wave-height) * 0.27924),37.5000% calc(var(--wave-height) * 0.25938),39.5833% calc(var(--wave-height) * 0.24524),41.6667% calc(var(--wave-height) * 0.23796),43.7500% calc(var(--wave-height) * 0.23867),45.8333% calc(var(--wave-height) * 0.24850),47.9167% calc(var(--wave-height) * 0.26856),50.0000% calc(var(--wave-height) * 0.30000),52.0833% calc(var(--wave-height) * 0.33346),54.1667% calc(var(--wave-height) * 0.35932),56.2500% calc(var(--wave-height) * 0.37832),58.3333% calc(var(--wave-height) * 0.39120),60.4167% calc(var(--wave-height) * 0.39871),62.5000% calc(var(--wave-height) * 0.40156),64.5833% calc(var(--wave-height) * 0.40051),66.6667% calc(var(--wave-height) * 0.39630),68.7500% calc(var(--wave-height) * 0.38965),70.8333% calc(var(--wave-height) * 0.38131),72.9167% calc(var(--wave-height) * 0.37201),75.0000% calc(var(--wave-height) * 0.36250),77.0833% calc(var(--wave-height) * 0.35351),79.1667% calc(var(--wave-height) * 0.34578),81.2500% calc(var(--wave-height) * 0.34004),83.3333% calc(var(--wave-height) * 0.33704),85.4167% calc(var(--wave-height) * 0.33751),87.5000% calc(var(--wave-height) * 0.34219),89.5833% calc(var(--wave-height) * 0.35182),91.6667% calc(var(--wave-height) * 0.36713),93.7500% calc(var(--wave-height) * 0.38887),95.8333% calc(var(--wave-height) * 0.41777),97.9167% calc(var(--wave-height) * 0.45456),100.0000% calc(var(--wave-height) * 0.50000),100% 100%,0 100%);
+}
+@media(max-width:768px){#nosotros,#testimonios,#contacto{--wave-height:32px}}
+/* El hero deja salir solo al listón; la foto animada permanece recortada. */
+#hero .hero-media{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+#espacios{z-index:1}
+.belt-svg{overflow:visible}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
 </head>
@@ -1725,8 +1739,10 @@ footer{background:var(--dark);position:relative;overflow:hidden;padding:0 0 24px
 <!-- HERO -->
 <section id="hero">
 
+  <div class="hero-media" aria-hidden="true">
   <div class="hero-photo" aria-hidden="true"></div>
-  <div class="hero-scrim" aria-hidden="true"></div>
+    <div class="hero-scrim" aria-hidden="true"></div>
+</div>
 
   <!-- Círculos flotantes esquina superior derecha -->
   <div class="hero-dots hero-dots-tr">
@@ -1780,7 +1796,6 @@ footer{background:var(--dark);position:relative;overflow:hidden;padding:0 0 24px
   <div class="belt-wrap" id="heroBelt">
     <svg class="belt-svg" id="heroBeltSvg" role="img" aria-label="Tipos de fiesta que organizamos"></svg>
   </div>
-  <svg class="wave-divider wave-to-cream" viewBox="0 0 1440 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0,40 C240,90 480,0 720,30 C960,60 1200,10 1440,50 L1440,100 L0,100 Z"/></svg>
 </section>
 
 <!-- ESPACIOS -->
@@ -1895,7 +1910,6 @@ footer{background:var(--dark);position:relative;overflow:hidden;padding:0 0 24px
       </div>
     </div>
   </div>
-  <svg class="wave-divider" viewBox="0 0 1440 100" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="waveGradNosotros" x1="0%" y1="15%" x2="100%" y2="85%"><stop offset="0%" stop-color="#5B2680"/><stop offset="48%" stop-color="#7A3FA8"/><stop offset="100%" stop-color="#E6334F"/></linearGradient></defs><path fill="url(#waveGradNosotros)" d="M0,40 C240,90 480,0 720,30 C960,60 1200,10 1440,50 L1440,100 L0,100 Z"/></svg>
 </section>
 
 <!-- NOSOTROS -->
@@ -2295,7 +2309,6 @@ footer{background:var(--dark);position:relative;overflow:hidden;padding:0 0 24px
       </div>
     </div>
   </div>
-  <svg class="wave-divider" viewBox="0 0 1440 100" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="waveGradTestimonios" x1="35%" y1="0%" x2="65%" y2="100%"><stop offset="0%" stop-color="#5B2680"/><stop offset="60%" stop-color="#7A3FA8"/><stop offset="100%" stop-color="#5B2680"/></linearGradient></defs><path fill="url(#waveGradTestimonios)" d="M0,40 C240,90 480,0 720,30 C960,60 1200,10 1440,50 L1440,100 L0,100 Z"/></svg>
 </section>
 
 <!-- TESTIMONIOS -->
@@ -2488,7 +2501,6 @@ Estamos dentro de Plaza Nativa, en Avenida Alfonso Reyes, a un lado de la Univer
       </div>
     </div>
   </div>
-  <svg class="wave-divider" viewBox="0 0 1440 100" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="waveGradContacto" x1="0%" y1="50%" x2="100%" y2="50%"><stop offset="0%" stop-color="#5B2680"/><stop offset="42%" stop-color="#952B6B"/><stop offset="60%" stop-color="#E6334F"/><stop offset="100%" stop-color="#E6334F"/></linearGradient></defs><path fill="url(#waveGradContacto)" d="M0,40 C240,90 480,0 720,30 C960,60 1200,10 1440,50 L1440,100 L0,100 Z"/></svg>
 </section>
 
 <!-- CONTACTO / COTIZAR -->
@@ -2638,7 +2650,7 @@ Estamos dentro de Plaza Nativa, en Avenida Alfonso Reyes, a un lado de la Univer
           <img class="jesus-note-foto" src="https://korvel.com.mx/img/founder-jesus.webp" alt="Jesús, de Korvel" width="64" height="64" loading="lazy">
           <span class="jesus-note-nombre">Jesús, de Korvel</span>
         </div>
-        <p>Hola, soy Jesus, de Korvel. Esta demo la arme con las fotos que tienen en google maps, asi que seguro me faltaron cosas, como sus paquetes o algunas respuestas de aqui abajo. Lo que tengan a la mano me lo mandan y se lo acomodo para dejarla a su medida.</p>
+        <p>Hola, soy Jesús, de Korvel. Armé esta demo porque me encantó su salón y creo que merece una página web igual de bonita que su espacio. La preparé con las fotos públicas que tienen en Google Maps y Facebook, así que esto es apenas una base: si la trabajamos juntos, podemos mejorar el diseño, agregar información y dejarla completamente a la medida de su salón. Podemos irla trabajando sin ningún anticipo; la vamos ajustando juntos y, si les gusta el resultado, me pagan. Si no les convence, no hay problema.</p>
         <span class="jesus-note-tel">Tel: 81 2933 5144</span>
         <img class="jesus-note-firma" src="https://korvel.com.mx/img/firma-jesus.webp" alt="Firma de Jesús" width="150" height="56" loading="lazy">
       </div>
